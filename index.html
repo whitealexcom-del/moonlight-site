@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Moonlight — тату-студия в Перми</title>
+<meta name="description" content="Moonlight — тату-студия в Перми. Авторские эскизы, цветная и чёрно-белая графика, минимализм, перекрытия. Запись через приложение.">
+<!-- === NEW: цвет адресной строки/статус-бара в тон сайту на телефоне (Android Chrome / iOS Safari) === -->
+<meta name="theme-color" content="#0F0E0C">
+<link rel="icon" href="visual/images/logo/logo-512.png">
+
+<!-- === NEW: дисплейный шрифт сменили на Vollkorn (тёплый книжный serif, как
+     в референсе), + Space Grotesk (жёсткий гротеск для навигации/лейблов)
+     + Manrope для читаемого текста. Пара всё ещё не "Montserrat + Open Sans". === -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vollkorn:ital,wght@0,400..900;1,400..900&family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ===== Плёночное зерно поверх всего сайта ===== -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ===== Полоска прогресса скролла ===== -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<!-- ===== Курсор-прожектор (глобальный, следует за мышью) ===== -->
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<!-- === NEW: кастомный курсор — точка + кольцо, см. main.js/style.css === -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- ===== Шапка ===== -->
+<header class="site-head" id="siteHead">
+  <a href="#hero" class="brand">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M28 6a17 17 0 1 0 0 36 14.5 14.5 0 0 1 0-36z"/>
+        <path d="M31 22l1.6 3.6L36 27l-3.4 1.4L31 32l-1.6-3.6L26 27l3.4-1.4z"/>
+      </svg>
+    </span>
+    <span class="brand-word">Moonlight</span>
+  </a>
+  <nav class="nav" id="siteNav">
+    <a href="#about" class="nav-link">О студии</a>
+    <a href="#portfolio" class="nav-link">Работы</a>
+    <a href="#services" class="nav-link">Услуги</a>
+    <a href="#app" class="nav-link">Приложение</a>
+    <a href="#reviews" class="nav-link">Отзывы</a>
+    <a href="#contacts" class="nav-link">Контакты</a>
+  </nav>
+  <a href="#cta" class="btn btn-ghost nav-cta">Записаться</a>
+  <button class="burger" id="burgerBtn" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ===== Мобильное меню ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" class="mm-link">О студии</a>
+  <a href="#portfolio" class="mm-link">Работы</a>
+  <a href="#services" class="mm-link">Услуги</a>
+  <a href="#app" class="mm-link">Приложение</a>
+  <a href="#reviews" class="mm-link">Отзывы</a>
+  <a href="#contacts" class="mm-link">Контакты</a>
+  <a href="#cta" class="btn btn-solid mm-cta">Записаться</a>
+</div>
+
+<main>
+
+  <!-- ===== ХИРО ===== -->
+  <!-- === Скролл-морфинг: секция намеренно высокая (см. CSS, height:220vh) —
+       пока идёт прокрутка внутри неё, .hero-sticky "прилипает" к экрану, а JS
+       (updateHeroMorph в main.js) увеличивает переменную --morph от 0 до 1.
+       От неё зависит радиус круга, которым цветная версия проступает поверх
+       ч/б — свет луны раскрывает цвет вокруг себя. Картинки уже подключены:
+       hero-mono-hq.jpg / hero-color-hq.jpg в hero-fix/. === -->
+  <section class="hero" id="hero">
+   <div class="hero-sticky">
+    <!-- Фоновое видео — необязательно, положи visual/video/hero-bg.mp4 если хочешь
+         добавить лёгкое движение под портретом. Без файла просто не показывается. -->
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline>
+      <source src="visual/video/hero-bg.mp4" type="video/mp4">
+    </video>
+    <div class="hero-fallback-bg" aria-hidden="true"></div>
+
+    <!-- ===== Портрет-морфинг «дымный взрыв» (ч/б → цвет/видео) =====
+         === NEW: цветной слой теперь не просто картинка, а обёртка с двумя
+         вариантами — фото (всегда есть) и поверх него видео (необязательное,
+         подключится само, как только появится файл portrait-color.mp4).
+         Маска дымного круга висит на обёртке — значит и фото, и видео проступают
+         через один и тот же дымный вырез, эффект тот же, что и был.
+         Обе версии (ч/б и цвет) ещё и медленно "дышат" (heroKenBurns в CSS) —
+         плавный зум/сдвиг по кругу, чтобы главный план не стоял колом, а жил. === -->
+    <!-- === FIX (финально, по твоей просьбе): ч/б — твой родной файл
+         "Главная.jpg" (настоящий 4K, без апскейла с моей стороны). Цвет —
+         твоя же "Картинка для морфинга.jpeg". Видео поверх неё донастраиваю
+         через object-position (см. .hero-portrait.color-video в style.css),
+         раз само видео чуть смещено относительно фото. -->
+    <div class="hero-portrait-frame" aria-hidden="true">
+      <img class="hero-portrait mono" src="visual/images/hero/Главная.jpg" alt="" onerror="this.style.display='none'">
+      <div class="hero-portrait-color-wrap">
+        <!-- === FIX (реальная причина "ничего не двигается"): контейнер по
+             пропорциям почти совпадает с фото/видео — сдвигать по горизонтали
+             через object-position было физически некуда (запас есть только
+             по высоте, поэтому Y-правка и сработала). Добавил обёртку с лёгким
+             зумом — теперь есть запас, и сдвиг реально работает. === -->
+        <div class="hero-color-shift">
+          <img class="hero-portrait color" src="hero-fix/hero-color-hq.jpg" alt="" onerror="this.style.display='none'">
+          <video class="hero-portrait color color-video" id="heroColorVideo" autoplay muted loop playsinline poster="hero-fix/hero-color-hq.jpg">
+            <source src="visual/video/portrait-color.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+    <!-- Клубы розово-белого дыма — набухают и рассеиваются по ходу скролла -->
+    <div class="hero-smoke" aria-hidden="true">
+      <div class="hero-smoke-blob b1"></div>
+      <div class="hero-smoke-blob b2"></div>
+      <div class="hero-smoke-blob b3"></div>
+      <div class="hero-smoke-blob b4"></div>
+    </div>
+
+    <div class="hero-texture parallax-layer" data-speed="0.35" aria-hidden="true"></div>
+    <div class="hero-vignette" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <div class="eyebrow reveal">ТАТУ-СТУДИЯ · ПЕРМЬ</div>
+      <h1 class="hero-title reveal" data-delay="1">Moonlight</h1>
+      <p class="hero-sub reveal" data-delay="2">Тату-студия в Перми. Авторские эскизы, медицинская стерильность и честный разговор перед каждой работой.</p>
+      <div class="hero-actions reveal" data-delay="3">
+        <a href="#cta" class="btn btn-solid">Записаться</a>
+        <a href="#portfolio" class="btn btn-ghost">Смотреть работы</a>
+      </div>
+    </div>
+
+    <a href="#about" class="scroll-hint" aria-label="Листать вниз">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M6 14l6 6 6-6"/></svg>
+    </a>
+   </div>
+  </section>
+
+  <!-- ===== БЕГУЩАЯ СТРОКА =====
+       === NEW: содержимое строится в main.js (buildMarquee) — число работ
+       берётся из PORTFOLIO_FILES.length, само актуализируется. === -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- ===== О СТУДИИ ===== -->
+  <section class="about" id="about">
+    <div class="wrap about-grid">
+      <div class="about-media reveal">
+        <div class="about-photo-frame">
+          <!-- === NEW: реальное фото мастера из visual/images/master/ (без имени в подписи) -->
+          <img src="visual/images/master/1782536974.jpg" alt="За работой в студии Moonlight" onerror="this.parentElement.classList.add('img-missing')">
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-eyebrow reveal">О СТУДИИ</div>
+        <h2 class="section-title reveal">Работы остаются с вами навсегда</h2>
+        <p class="reveal" data-delay="1">Я тату-мастер студии Moonlight в Перми. За плечами — медицинское образование, а к каждой татуировке отношусь не как к «перерисованной картинке», а как к делу всей жизни.</p>
+        <p class="reveal" data-delay="2">Первую тату я сделала себе сама — и уже не смогла остановиться. Сегодня в студии рождаются авторские эскизы, часть из которых мы прорабатываем вместе с нейросетями.</p>
+        <div class="feat-grid reveal" data-delay="3">
+          <div class="feat"><span class="feat-ico">🩺</span><div><b>Медицинское образование</b><span>Стерильность и безопасность на каждом сеансе</span></div></div>
+          <div class="feat"><span class="feat-ico">🎨</span><div><b>Индивидуальный эскиз</b><span>Нарисуем уникальный дизайн под вашу идею</span></div></div>
+          <div class="feat"><span class="feat-ico">🤖</span><div><b>Эскизы через нейросети</b><span>Собственные наработки для нестандартных идей</span></div></div>
+          <div class="feat"><span class="feat-ico">💫</span><div><b>Работа с душой</b><span>Каждая татуировка — с полной вовлечённостью</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ПОРТФОЛИО =====
+       === NEW: 289 фото больше не выводятся все разом — "каменная кладка"
+       по 20 карточек за раз (без симметрии, без дыр) плюс листалка ‹ ›
+       под галереей. Клик по карточке открывает полноэкранный лайтбокс
+       (пролистывает вообще все 289, не только текущую страницу).
+       Список файлов и вся логика — в main.js (PORTFOLIO_FILES). -->
+  <section class="portfolio" id="portfolio">
+    <div class="wrap">
+      <div class="section-eyebrow reveal center">ГАЛЕРЕЯ</div>
+      <h2 class="section-title reveal center">Последние работы</h2>
+      <p class="section-lead reveal center" data-delay="1">Наведите курсор на работу — она оживает.</p>
+      <div class="work-grid reveal" data-delay="2" id="workGrid"></div>
+      <div class="work-pager reveal" data-delay="3">
+        <button class="work-pager-btn" id="workPrev" aria-label="Предыдущие работы">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="work-pager-count" id="workPageLabel">1 / 1</span>
+        <button class="work-pager-btn" id="workNext" aria-label="Следующие работы">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ДЫМ-ДИВАЙДЕР =====
+       === NEW: атмосферная прослойка ровно в середине сайта — приглушённая
+       дымовая текстура (smoke-bg-2.jpg из папки hero), просто для глубины,
+       без текста. === -->
+  <div class="smoke-divider" aria-hidden="true"></div>
+
+  <!-- ===== УСЛУГИ ===== -->
+  <section class="services" id="services">
+    <div class="wrap">
+      <div class="section-eyebrow reveal center">УСЛУГИ</div>
+      <h2 class="section-title reveal center">Что мы умеем</h2>
+
+      <div class="services-grid">
+        <div class="service-card reveal">
+          <span class="service-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" opacity="0.5"/></svg></span>
+          <h3>Чёрно-белая графика</h3>
+          <p>Реализм, графика, дотворк — глубокие тени и чистая линия.</p>
+          <div class="service-price">цена на консультации</div>
+        </div>
+        <!-- === NEW: эскиз через нейросеть — по просьбе, две опции в одной карточке === -->
+        <div class="service-card reveal" data-delay="1">
+          <span class="service-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 15l0.8 2.2L22 18l-2.2 0.8L19 21l-0.8-2.2L16 18l2.2-0.8z"/></svg></span>
+          <h3>Эскиз через ИИ</h3>
+          <p>Экономичнее и больше вариантов на выбор. Либо распишем эскиз от руки — дороже, зато с душой.</p>
+          <div class="service-price">цена на консультации</div>
+        </div>
+        <div class="service-card reveal" data-delay="2">
+          <span class="service-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M12 4v16"/></svg></span>
+          <h3>Минимализм и лайнворк</h3>
+          <p>Тонкая линия, аккуратные символы и надписи.</p>
+          <div class="service-price">цена на консультации</div>
+        </div>
+        <div class="service-card reveal" data-delay="3">
+          <span class="service-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v8h8"/></svg></span>
+          <h3>Перекрытие / коррекция</h3>
+          <p>Обновим старую или неудачную работу — с полной консультацией.</p>
+          <div class="service-price">цена на консультации</div>
+        </div>
+        <div class="service-card reveal" data-delay="4">
+          <span class="service-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.35-7-10a4 4 0 0 1 7-2.65A4 4 0 0 1 19 10c0 5.65-7 10-7 10z"/></svg></span>
+          <h3>Консультация</h3>
+          <p>Обсудим идею, размер, стиль и цену перед записью.</p>
+          <div class="service-price">бесплатно</div>
+        </div>
+        <div class="service-card reveal" data-delay="5">
+          <span class="service-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span>
+          <h3>Уход после сеанса</h3>
+          <p>Полный дневник заживления с напоминаниями — в приложении.</p>
+          <div class="service-price">в приложении</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ПРИЛОЖЕНИЕ =====
+       === NEW: карточка-мостик к PWA-приложению студии — можно открыть на
+       телефоне прямо из браузера и добавить на главный экран, как обычное
+       приложение (это и есть суть PWA, отдельно из App Store/Google Play
+       ставить не нужно). Ссылка ведёт на реальный адрес приложения на
+       GitHub Pages: https://whitealexcom-del.github.io/Moonlight-perm/ -->
+  <section class="app-promo" id="app">
+    <div class="wrap">
+      <div class="app-card reveal">
+        <div class="app-card-icon" aria-hidden="true">
+          <img src="visual/images/logo/logo-512.png" alt="" onerror="this.parentElement.innerHTML='<svg viewBox=&quot;0 0 48 48&quot; width=&quot;34&quot; height=&quot;34&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot;><path d=&quot;M28 6a17 17 0 1 0 0 36 14.5 14.5 0 0 1 0-36z&quot;/></svg>'">
+        </div>
+        <div class="app-card-text">
+          <h3>Приложение Moonlight</h3>
+          <p>Запись на сеанс, переписка с мастером, дневник заживления и цены — всё в одном месте. Работает прямо в браузере, ставить из магазина приложений не нужно.</p>
+          <div class="app-feat-row">
+            <span>📅 Запись онлайн</span>
+            <span>💬 Чат с мастером</span>
+            <span>🩹 Дневник заживления</span>
+          </div>
+        </div>
+        <div class="app-card-cta">
+          <a href="https://whitealexcom-del.github.io/Moonlight-perm/" target="_blank" rel="noopener" class="btn btn-solid" id="appLink">Открыть приложение</a>
+          <div class="app-install-note">На телефоне: откройте ссылку → «Добавить на главный экран» (iOS: кнопка «Поделиться»; Android — предложит само)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ОТЗЫВЫ =====
+       Это иллюстративные примеры — замени на реальные из раздела отзывов
+       в приложении, когда решишь, какие показывать на сайте. -->
+  <section class="reviews" id="reviews">
+    <div class="wrap">
+      <div class="section-eyebrow reveal center">ОТЗЫВЫ</div>
+      <h2 class="section-title reveal center">Что говорят клиенты</h2>
+
+      <div class="reviews-grid">
+        <div class="review-card reveal">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">«Делала минимализм на запястье — аккуратнее не видела ни у кого в городе. Записалась на вторую работу».</p>
+          <div class="review-name">— Алина</div>
+        </div>
+        <div class="review-card reveal" data-delay="1">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">«Долго боялся большого цветного рукава — объяснили каждый шаг, было не страшно и результат превзошёл ожидания».</p>
+          <div class="review-name">— Дмитрий</div>
+        </div>
+        <div class="review-card reveal" data-delay="2">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">«Перекрыли старую работу так, что от неё не осталось следа. Дневник заживления в приложении реально помог».</p>
+          <div class="review-name">— Марина</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA / ЗАПИСЬ =====
+       Фон секции — картинка "Внизу сайта" из visual/images/hero/ (скопирована
+       как hero-bottom.jpg), как и просили — низ сайта оформлен отдельным кадром. -->
+  <section class="cta" id="cta">
+    <div class="cta-bg" aria-hidden="true"></div>
+    <div class="parallax-layer cta-glow" data-speed="0.2" aria-hidden="true"></div>
+    <div class="wrap cta-inner">
+      <h2 class="cta-title reveal">Готовы к новой татуировке?</h2>
+      <p class="reveal" data-delay="1">Запись, переписка с мастером, цены и дневник заживления — всё в приложении Moonlight.</p>
+      <div class="cta-actions reveal" data-delay="2">
+        <a href="https://whitealexcom-del.github.io/Moonlight-perm/" target="_blank" rel="noopener" class="btn btn-solid btn-lg" id="ctaAppLink">Открыть приложение</a>
+        <!-- === NEW: связь — личные сообщения ВКонтакте, как просили (вместо Telegram здесь) -->
+        <a href="https://vk.com/write184431245" target="_blank" rel="noopener" class="btn btn-ghost btn-lg">Написать в ВК</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== КОНТАКТЫ ===== -->
+  <section class="contacts" id="contacts">
+    <div class="wrap contacts-grid">
+      <div class="reveal">
+        <div class="section-eyebrow">КОНТАКТЫ</div>
+        <h2 class="section-title">Ждём в гостях</h2>
+        <ul class="contact-list">
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg> ул. Тимирязева, 54, Пермь</li>
+          <li class="contact-note">Вход со стороны салона красоты · домофон 21 + «вызов»</li>
+          <li><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> По предварительной записи</li>
+        </ul>
+        <div class="social-row">
+          <!-- === NEW: ВК личные сообщения — первым и основным способом связи -->
+          <a href="https://vk.com/write184431245" target="_blank" rel="noopener" class="social-ico" aria-label="ВКонтакте — личные сообщения мастеру"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><text x="12" y="15.8" font-size="8.2" font-family="Arial,sans-serif" text-anchor="middle" fill="currentColor" stroke="none">VK</text></svg></a>
+          <a href="https://t.me/moonlight_tattoo" target="_blank" rel="noopener" class="social-ico" aria-label="Telegram-канал студии"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-7 18-3-8-8-3z"/><circle cx="14" cy="10" r="1.3" fill="currentColor" stroke="none"/></svg></a>
+        </div>
+      </div>
+      <div class="map-frame reveal" data-delay="1">
+        <!-- === NEW: реальная Яндекс.Карта по адресу студии (текстовый поиск,
+             без API-ключа). Приглушена фильтром в CSS под тёмную тему сайта. -->
+        <iframe src="https://yandex.ru/map-widget/v1/?text=%D0%9F%D0%B5%D1%80%D0%BC%D1%8C%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A2%D0%B8%D0%BC%D0%B8%D1%80%D1%8F%D0%B7%D0%B5%D0%B2%D0%B0%2C%2054&z=17" loading="lazy" title="Moonlight на карте — ул. Тимирязева, 54, Пермь" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- ===== NEW: форма сообщения — уходит напрямую в ту же базу (Supabase),
+         что и приложение, отдельным запросом (без сторонней библиотеки,
+         чтобы не зависеть от CDN, который может быть заблокирован без VPN —
+         тот же нюанс, что уже был учтён в самом приложении). Пока в базе нет
+         таблицы site_leads — форма аккуратно покажет ошибку, ничего не сломает. -->
+    <div class="wrap">
+      <div class="lead-form-wrap reveal" data-delay="2">
+        <div class="section-eyebrow">НАПИСАТЬ НАМ</div>
+        <h3 class="lead-form-title">Оставьте сообщение</h3>
+        <p class="section-lead">Мастер увидит его в приложении и ответит в ближайшее время.</p>
+        <form class="lead-form" id="leadForm">
+          <input type="text" name="name" placeholder="Имя" autocomplete="name" required>
+          <input type="tel" name="phone" placeholder="Телефон" autocomplete="tel" required>
+          <input type="email" name="email" placeholder="Почта (необязательно)" autocomplete="email">
+          <textarea name="message" placeholder="Что хотите спросить или какую идею обсудить?" rows="3" required></textarea>
+          <button type="submit" class="btn btn-solid" id="leadFormSubmit">Отправить</button>
+          <div class="lead-form-status" id="leadFormStatus" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap foot-grid">
+    <a href="#hero" class="brand foot-brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M28 6a17 17 0 1 0 0 36 14.5 14.5 0 0 1 0-36z"/></svg>
+      </span>
+      <span class="brand-word">Moonlight</span>
+    </a>
+    <div class="foot-links">
+      <a href="#about">О студии</a><a href="#portfolio">Работы</a><a href="#services">Услуги</a><a href="#contacts">Контакты</a>
+    </div>
+    <div class="foot-social">
+      <a href="https://vk.com/write184431245" target="_blank" rel="noopener" aria-label="ВКонтакте — написать"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><text x="12" y="15.8" font-size="8" font-family="Arial,sans-serif" text-anchor="middle" fill="currentColor" stroke="none">VK</text></svg></a>
+      <a href="https://t.me/moonlight_tattoo" target="_blank" rel="noopener" aria-label="Telegram-канал"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-7-7 18-3-8-8-3z"/><circle cx="14" cy="10" r="1.3" fill="currentColor" stroke="none"/></svg></a>
+    </div>
+    <div class="foot-copy">© <span id="year"></span> Moonlight Tattoo. Все права защищены.</div>
+  </div>
+</footer>
+
+<!-- ===== Кнопка "наверх" ===== -->
+<button class="to-top" id="toTop" aria-label="Наверх">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+</button>
+
+<!-- ===== Лайтбокс портфолио (полноэкранный просмотр по клику) ===== -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Закрыть">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <button class="lightbox-nav prev" id="lightboxPrev" aria-label="Предыдущая работа">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <div class="lightbox-stage" id="lightboxStage"></div>
+  <button class="lightbox-nav next" id="lightboxNext" aria-label="Следующая работа">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+  </button>
+</div>
+
+<!-- ===== NEW: плавающая кнопка ВК — всегда на экране, не только в контактах ===== -->
+<a href="https://vk.com/write184431245" target="_blank" rel="noopener" class="vk-float" id="vkFloat" aria-label="Написать в ВК личные сообщения">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><text x="12" y="15.8" font-size="8.2" font-family="Arial,sans-serif" text-anchor="middle" fill="currentColor" stroke="none">VK</text></svg>
+  <span class="vk-float-pulse" aria-hidden="true"></span>
+</a>
+
+<!-- ===== NEW: баннер про приложение — показывается один раз, само появление
+     через несколько секунд после захода, закрывается крестиком (запоминаем
+     в localStorage, чтобы не мозолил глаза при каждом визите). ===== -->
+<div class="install-banner" id="installBanner" aria-hidden="true">
+  <button class="install-banner-close" id="installBannerClose" aria-label="Закрыть">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <img class="install-banner-icon" src="visual/images/logo/logo-512.png" alt="" onerror="this.style.display='none'">
+  <div class="install-banner-text">
+    <b>Установите приложение Moonlight</b>
+    <span>Запись, чат с мастером и дневник заживления — на главном экране телефона</span>
+  </div>
+  <a href="https://whitealexcom-del.github.io/Moonlight-perm/" target="_blank" rel="noopener" class="btn btn-solid install-banner-btn" id="installBannerBtn">Установить</a>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
