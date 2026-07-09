@@ -411,7 +411,7 @@ main section, #app{ scroll-margin-top:calc(var(--header-h) + 14px); }
    выглядит — подкручу). === */
 @media (max-width:700px){
   .hero-color-shift{
-    transform:scaleX(1.06) translateX(1.6%);
+    transform:scaleX(1.02) translateX(0.6%);
   }
 }
 .hero-portrait.color, .hero-portrait.color-video{
