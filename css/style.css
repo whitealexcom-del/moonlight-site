@@ -778,7 +778,12 @@ main section, #app{ scroll-margin-top:calc(var(--header-h) + 14px); }
 /* ================= ТЕЛЕФОН ≤600px ================= */
 @media (max-width:600px){
   .wrap{ padding:0 18px; }
-  .hero{ height:180vh; }
+  /* === FIX: было 180vh — чтобы полностью раскрыть цвет/видео, приходилось
+     прокручивать почти весь экран (180vh-100vh=80vh скролла). Сократил до
+     120vh — эффект тот же, но открывается почти сразу, буквально одним
+     свайпом (20vh скролла). Если и так долго — можно вообще убрать
+     scroll-триггер на телефоне и открывать по таймеру, скажи. === */
+  .hero{ height:120vh; }
   .hero-sticky{ padding-top:calc(var(--header-h) + 10px); }
   .hero-actions{ flex-direction:column; width:100%; }
   .hero-actions .btn{ width:100%; }
