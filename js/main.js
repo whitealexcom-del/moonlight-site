@@ -268,14 +268,14 @@ heroVideo.style.opacity = "0";
 heroVideo.style.transition = "opacity 0.8s ease";
 
 /* ---------- Морфинг с видео вместо статичной цветной фотки ----------
-   === NEW: если появится файл visual/video/portrait-color.mp4 — он сам
-   подхватится и начнёт играть поверх цветного фото. Пока файла нет —
-   остаётся скрытым (opacity:0 из CSS), под дымной маской видно фото,
-   как раньше. Никакой доп. настройки не нужно, просто закинь файл. === */
+   === FIX: отдельной картинки-дублёра больше нет — video сам показывает
+   свой poster (тот же файл), пока не начал играть, браузер это делает
+   нативно, без доп. слоя и без риска рассинхрона. Если видео совсем не
+   загрузится (ошибка) — просто оставляем poster на месте, ничего не
+   прячем, чтобы не остался пустой участок под дымной маской. === */
 var heroColorVideo = document.getElementById("heroColorVideo");
 if(heroColorVideo){
-  heroColorVideo.addEventListener("error", function(){ heroColorVideo.style.display = "none"; }, true);
-  heroColorVideo.addEventListener("playing", function(){ heroColorVideo.classList.add("is-playing"); });
+  heroColorVideo.addEventListener("error", function(){ heroColorVideo.classList.add("video-failed"); }, true);
 }
 
 /* ---------- Ссылка на приложение ----------

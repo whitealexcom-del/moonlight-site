@@ -121,9 +121,13 @@
              через object-position было физически некуда (запас есть только
              по высоте, поэтому Y-правка и сработала). Добавил обёртку с лёгким
              зумом — теперь есть запас, и сдвиг реально работает. === -->
+        <!-- === FIX: убрал отдельную картинку-дублёр (img.color) — она и видео
+             иногда рассинхронизировались/выглядели "криво" друг относительно
+             друга. Теперь один-единственный элемент: video со своим poster
+             (тот же файл hero-color-hq.jpg) — браузер сам показывает постер,
+             пока видео не начало играть, без второго слоя поверх. === -->
         <div class="hero-color-shift">
-          <img class="hero-portrait color" src="hero-fix/hero-color-hq.jpg" alt="" onerror="this.style.display='none'">
-          <video class="hero-portrait color color-video" id="heroColorVideo" autoplay muted loop playsinline poster="hero-fix/hero-color-hq.jpg">
+          <video class="hero-portrait color-video" id="heroColorVideo" autoplay muted loop playsinline poster="hero-fix/hero-color-hq.jpg">
             <source src="visual/video/portrait-color.mp4" type="video/mp4">
           </video>
         </div>
