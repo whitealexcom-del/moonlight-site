@@ -366,9 +366,13 @@ main section, #app{ scroll-margin-top:calc(var(--header-h) + 14px); }
    без резких скачков. Один общий keyframes для ч/б, цвета и видео — они все
    получают ЭТУ ЖЕ анимацию с одинаковым таймингом, значит зум/сдвиг идёт
    синхронно на всех слоях и дымная маска между ними не "рассинхронится". === */
+/* === FIX (по просьбе): статуя на первой (ч/б) картинке больше не "дышит"
+   зумом ни на одном устройстве — просто стоит неподвижно. Раньше тут была
+   heroKenBurns-анимация, теперь animation:none везде. keyframes оставил в
+   файле на случай, если движение когда-то захотят вернуть. === */
 .hero-portrait, .hero-portrait-color-wrap .hero-portrait{
-  animation:heroKenBurns 26s ease-in-out infinite alternate;
-  will-change:transform;
+  animation:none;
+  will-change:auto;
 }
 @keyframes heroKenBurns{
   from{ transform:scale(1) translate3d(0,0,0); }
@@ -414,15 +418,6 @@ main section, #app{ scroll-margin-top:calc(var(--header-h) + 14px); }
     /* === FIX: добавил запас по вертикали (scaleY) — раньше был запас
        только по горизонтали, вниз двигать было физически некуда. === */
     transform:scale(1.03, 1.03) translate(1%, 0.8%);
-  }
-  /* === FIX: на телефоне фоновое ч/б фото ("дышащий" Ken Burns зум) само по
-     себе плавает и уезжает в сторону от неподвижного цветного слоя/видео —
-     на маленьком экране это гораздо заметнее, чем на десктопе, и границу
-     дымного выреза начинает "штормить". Фиксируем ч/б фото на месте только
-     на мобильных, десктоп не трогаем. === */
-  .hero-portrait.mono{
-    animation:none;
-    will-change:auto;
   }
 }
 .hero-portrait.color-video{
