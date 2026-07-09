@@ -411,7 +411,9 @@ main section, #app{ scroll-margin-top:calc(var(--header-h) + 14px); }
    выглядит — подкручу). === */
 @media (max-width:700px){
   .hero-color-shift{
-    transform:scaleX(1.02) translateX(0.6%);
+    /* === FIX: добавил запас по вертикали (scaleY) — раньше был запас
+       только по горизонтали, вниз двигать было физически некуда. === */
+    transform:scale(1.03, 1.03) translate(1%, 0.8%);
   }
   /* === FIX: на телефоне фоновое ч/б фото ("дышащий" Ken Burns зум) само по
      себе плавает и уезжает в сторону от неподвижного цветного слоя/видео —
